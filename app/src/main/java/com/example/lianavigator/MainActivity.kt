@@ -56,9 +56,9 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                                containerColor = MaterialTheme.colorScheme.background,
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                                actionIconContentColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     },
@@ -110,7 +110,8 @@ class MainActivity : ComponentActivity() {
                         2 -> CollaborationScreen(
                             modifier = Modifier.padding(innerPadding))
                         3 -> ProfileScreen(
-                            modifier = Modifier.padding(innerPadding))
+                            modifier = Modifier.padding(innerPadding)
+                        )
                     }
                 }
             }
