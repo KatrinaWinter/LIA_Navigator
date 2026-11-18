@@ -104,11 +104,13 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     when (selectedItem) {
                         0 -> HomeScreen(
-                            modifier = Modifier.padding(innerPadding)
-                        )
-                        1 -> Text("Företag", modifier = Modifier.padding(innerPadding))
-                        2 -> Text("Samarbeta", modifier = Modifier.padding(innerPadding))
-                        3 -> Text("Profil", modifier = Modifier.padding(innerPadding))
+                            modifier = Modifier.padding(innerPadding))
+                        1 -> CompanyScreen(
+                            modifier = Modifier.padding(innerPadding))
+                        2 -> CollaborationScreen(
+                            modifier = Modifier.padding(innerPadding))
+                        3 -> ProfileScreen(
+                            modifier = Modifier.padding(innerPadding))
                     }
                 }
             }
@@ -117,12 +119,12 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Composable
+/*@Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     Text(
         text = "Välkommen till LIA Navigator!",
         modifier = modifier
     )
-}
+}*/
 
 //@Preview()
