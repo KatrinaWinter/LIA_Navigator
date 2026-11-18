@@ -1,11 +1,19 @@
+
 package com.example.lianavigator.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Primary colors
+val ForestGreen = Color(0xFF314C43)
+val SageGreen = Color(0xFF8DA99A)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Background colors
+val Cream = Color(0xFFF0E9DC)
+val CardWhite = Color(0xFFFFFCF5)
+
+// Accent colors
+val Lilac = Color(0xFFC7B8E2)
+
+// Text colors
+val Charcoal = Color(0xFF343B3A)
+val MutedGreen = Color(0xFF687A6F)
