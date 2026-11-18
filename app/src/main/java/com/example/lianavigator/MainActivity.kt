@@ -20,6 +20,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -28,6 +37,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LIANavigatorTheme {
+                var selectedItem by rememberSaveable {
+                    mutableIntStateOf(0)
+                }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -49,11 +61,55 @@ class MainActivity : ComponentActivity() {
                                 actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
+                    },
+                    bottomBar = {
+                        NavigationBar {
+                            NavigationBarItem(
+                                selected = selectedItem == 0,
+                                onClick = { selectedItem = 0 },
+                                icon = {
+                                    Icon(Icons.Default.Home, contentDescription = "Hem")
+                                },
+                                label = { Text("Hem") }
+                            )
+
+                            NavigationBarItem(
+                                selected = selectedItem == 1,
+                                onClick = { selectedItem = 1 },
+                                icon = {
+                                    Icon(Icons.Default.Business, contentDescription = "Företag")
+                                },
+                                label = { Text("Företag") }
+                            )
+
+                            NavigationBarItem(
+                                selected = selectedItem == 2,
+                                onClick = { selectedItem = 2 },
+                                icon = {
+                                    Icon(Icons.Default.Groups, contentDescription = "Samarbeta")
+                                },
+                                label = { Text("Samarbeta") }
+                            )
+
+                            NavigationBarItem(
+                                selected = selectedItem == 3,
+                                onClick = { selectedItem = 3 },
+                                icon = {
+                                    Icon(Icons.Default.AccountCircle, contentDescription = "Profil")
+                                },
+                                label = { Text("Profil") }
+                            )
+                        }
                     }
                 ) { innerPadding ->
-                    HomeScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    when (selectedItem) {
+                        0 -> HomeScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                        1 -> Text("Företag", modifier = Modifier.padding(innerPadding))
+                        2 -> Text("Samarbeta", modifier = Modifier.padding(innerPadding))
+                        3 -> Text("Profil", modifier = Modifier.padding(innerPadding))
+                    }
                 }
             }
         }
