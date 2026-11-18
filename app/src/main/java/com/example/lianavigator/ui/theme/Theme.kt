@@ -11,29 +11,31 @@ import androidx.compose.ui.graphics.Color
 // Dark theme
 private val DarkColorScheme = darkColorScheme(
     primary = SageGreen,
-    secondary = Lilac,
-    tertiary = Cream,
-    background = Charcoal,
-    surface = Color(0xFF414B46),
+    secondary = SoftForestGreen,
+    tertiary = Lilac,
+    background = Color(0xFF28332F),
+    surface = Color(0xFF394640),
     onPrimary = Charcoal,
-    onSecondary = Charcoal,
+    onSecondary = Cream,
     onTertiary = Charcoal,
     onBackground = Cream,
-    onSurface = Cream
+    onSurface = Cream,
+    onSurfaceVariant = Color(0xFFB8C9BC),
 )
 
 // Light theme
 private val LightColorScheme = lightColorScheme(
-    primary = ForestGreen,
+    primary = SoftForestGreen,
     secondary = SageGreen,
     tertiary = Lilac,
     background = Cream,
     surface = CardWhite,
     onPrimary = CardWhite,
-    onSecondary = Charcoal,
+    onSecondary = ForestGreen,
     onTertiary = Charcoal,
     onBackground = Charcoal,
-    onSurface = Charcoal
+    onSurface = Charcoal,
+    onSurfaceVariant = MutedGreen,
 )
 
 @Composable

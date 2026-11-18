@@ -5,11 +5,12 @@ import androidx.compose.ui.graphics.Color
 
 // Primary colors
 val ForestGreen = Color(0xFF314C43)
-val SageGreen = Color(0xFF8DA99A)
+val SoftForestGreen = Color(0xFF49695B)
+val SageGreen = Color(0xFFA5B7A8)
 
 // Background colors
-val Cream = Color(0xFFF0E9DC)
-val CardWhite = Color(0xFFFFFCF5)
+val Cream = Color(0xFFFFFAED)
+val CardWhite = Color(0xFFFFFCF7)
 
 // Accent colors
 val Lilac = Color(0xFFC7B8E2)

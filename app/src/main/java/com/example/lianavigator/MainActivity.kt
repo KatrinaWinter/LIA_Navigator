@@ -29,6 +29,10 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import com.example.lianavigator.ui.theme.MutedGreen
+import com.example.lianavigator.ui.theme.SageGreen
+import com.example.lianavigator.ui.theme.SoftForestGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -63,14 +67,24 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        NavigationBar {
+                        NavigationBar(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                        ) {
                             NavigationBarItem(
                                 selected = selectedItem == 0,
                                 onClick = { selectedItem = 0 },
                                 icon = {
                                     Icon(Icons.Default.Home, contentDescription = "Hem")
                                 },
-                                label = { Text("Hem") }
+                                label = { Text("Hem") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
+                                )
                             )
 
                             NavigationBarItem(
@@ -79,7 +93,14 @@ class MainActivity : ComponentActivity() {
                                 icon = {
                                     Icon(Icons.Default.Business, contentDescription = "Företag")
                                 },
-                                label = { Text("Företag") }
+                                label = { Text("Företag") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
+                                )
                             )
 
                             NavigationBarItem(
@@ -88,7 +109,14 @@ class MainActivity : ComponentActivity() {
                                 icon = {
                                     Icon(Icons.Default.Groups, contentDescription = "Samarbeta")
                                 },
-                                label = { Text("Samarbeta") }
+                                label = { Text("Samarbeta") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
+                                )
                             )
 
                             NavigationBarItem(
@@ -97,7 +125,14 @@ class MainActivity : ComponentActivity() {
                                 icon = {
                                     Icon(Icons.Default.AccountCircle, contentDescription = "Profil")
                                 },
-                                label = { Text("Profil") }
+                                label = { Text("Profil") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
+                                )
                             )
                         }
                     }
