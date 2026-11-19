@@ -10,7 +10,7 @@ val SageGreen = Color(0xFFA5B7A8)
 
 // Background colors
 val Cream = Color(0xFFFFFAED)
-val CardWhite = Color(0xFFFFFCF7)
+val CardWhite = Color(0xFFFFFEF9)
 
 // Accent colors
 val Lilac = Color(0xFFC7B8E2)

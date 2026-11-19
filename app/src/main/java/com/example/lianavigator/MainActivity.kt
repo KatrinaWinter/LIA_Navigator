@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text("LIA Navigator")
+                                Text("Ⓛ LIA Navigator")
                             },
                             actions = {
                                 IconButton(onClick = { }) {
@@ -153,14 +153,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-/*@Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    Text(
-        text = "Välkommen till LIA Navigator!",
-        modifier = modifier
-    )
-}*/
-
-//@Preview()

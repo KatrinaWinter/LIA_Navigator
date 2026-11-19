@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.lianavigator.viewmodel.CompanyViewModel
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -154,8 +155,15 @@ fun StatCard(
     }
 }
 
+
+
 @Composable
-fun CompanyScreen(modifier: Modifier = Modifier) {
+fun CompanyScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CompanyViewModel
+) {
+    val uiState = viewModel.uiState.value
+
     Text(
         text = "Företag",
         modifier = modifier
@@ -187,11 +195,11 @@ fun ScreenHeader(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
+        /*Text(
             text = "Ⓛ",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
-        )
+        )*/
 
         Spacer(modifier = Modifier.width(12.dp))
 
@@ -202,6 +210,8 @@ fun ScreenHeader(
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
+
+        Spacer(modifier = Modifier.height(20.dp))
 
     }
 }
