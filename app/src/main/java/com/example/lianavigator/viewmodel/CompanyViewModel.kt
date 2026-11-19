@@ -11,7 +11,8 @@ class CompanyViewModel {
             id = 1,
             name = "Spotify",
             category = "Teknik",
-            isSaved = false
+            isSaved = false,
+            websiteUrl = "https://www.spotify.com"
         )
     )
     private val _uiState = mutableStateOf(
