@@ -13,6 +13,20 @@ class CompanyViewModel {
             category = "Teknik",
             isSaved = false,
             websiteUrl = "https://www.spotify.com"
+        ),
+        Company(
+            id = 2,
+            name = "Volvo",
+            category = "Teknik",
+            isSaved = false,
+            websiteUrl = "https://www.volvo.com"
+        ),
+        Company(
+            id = 3,
+            name = "Epassi",
+            category = "Ux/Ui",
+            isSaved = false,
+            websiteUrl = "https://www.epassi.com"
         )
     )
     private val _uiState = mutableStateOf(
@@ -23,13 +37,14 @@ class CompanyViewModel {
 
     val uiState: State<CompanyUiState> = _uiState
 
-    fun addCompany(name: String, category: String) {
+    fun addCompany(name: String, category: String, websiteUrl: String? = null) {
         val newId = (_uiState.value.companies.maxOfOrNull { it.id } ?: 0) + 1
 
         val newCompany = Company(
             id = newId,
             name = name,
-            category = category
+            category = category,
+            websiteUrl = websiteUrl
         )
 
         _uiState.value = _uiState.value.copy(
