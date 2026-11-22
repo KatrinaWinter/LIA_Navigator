@@ -3,6 +3,7 @@ package com.example.lianavigator.viewmodel
 import com.example.lianavigator.data.Company
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.example.lianavigator.data.CompanyStatus
 import com.example.lianavigator.ui.CompanyUiState
 
 class CompanyViewModel {
@@ -19,7 +20,8 @@ class CompanyViewModel {
             name = "Volvo",
             category = "Teknik",
             isSaved = false,
-            websiteUrl = "https://www.volvo.com"
+            websiteUrl = "https://www.volvo.com",
+            status = CompanyStatus.CONTACT_ONGOING
         ),
         Company(
             id = 3,

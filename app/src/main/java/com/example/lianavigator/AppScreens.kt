@@ -1,6 +1,7 @@
 package com.example.lianavigator
 
-import android.graphics.Color
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,12 +44,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextDecoration
 import com.example.lianavigator.data.Company
-import com.example.lianavigator.ui.theme.Lilac
+import com.example.lianavigator.ui.theme.Lavender
 import com.example.lianavigator.viewmodel.CompanyViewModel
 import androidx.compose.runtime.setValue
-import com.example.lianavigator.ui.theme.ForestGreen
+import com.example.lianavigator.ui.theme.TurquoiseGreen
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
+import com.example.lianavigator.data.CompanyStatus
+import com.example.lianavigator.ui.theme.LightTurquoise
+import com.example.lianavigator.ui.theme.LightLavender
+import androidx.compose.ui.graphics.Color
+
 
 
 @Composable
@@ -211,7 +217,7 @@ fun CompanyScreen(
                 modifier = Modifier.size(28.dp),
                 shape = CircleShape,
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = ForestGreen,
+                    containerColor = TurquoiseGreen,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
@@ -357,14 +363,20 @@ fun CompanyScreen(
 
 @Composable
 fun CompanyCard(company: Company) {
+    val (backgroundColor, borderColor) = companyStatusColor(company.status)
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(100.dp)
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(20.dp)
+            ),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(20.dp)
+            containerColor = backgroundColor
+        )
     ) {
         val uriHandler = LocalUriHandler.current
 
@@ -374,7 +386,7 @@ fun CompanyCard(company: Company) {
             Text(
                 text = company.name,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = borderColor
             )
 
             Text(
@@ -391,10 +403,26 @@ fun CompanyCard(company: Company) {
                     },
                     textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Lilac
+                    color = Lavender
                 )
             }
         }
+    }
+}
+
+fun companyStatusColor(status: CompanyStatus): Pair<Color, Color> {
+    return when (status) {
+        CompanyStatus.SAVED ->
+            LightTurquoise to TurquoiseGreen
+
+        CompanyStatus.CONTACT_ONGOING ->
+            LightLavender to Lavender
+
+        CompanyStatus.APPLICATION_SENT ->
+            Color(0xFFEEF3FF) to Color(0xFF7895C5)
+
+        CompanyStatus.LIA_CONFIRMED ->
+            Color(0xFFEDF7EF) to Color(0xFF6B9B78)
     }
 }
 
@@ -423,11 +451,6 @@ fun ScreenHeader(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        /*Text(
-            text = "Ⓛ",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
-        )*/
 
         Spacer(modifier = Modifier.width(12.dp))
 

@@ -8,34 +8,35 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+
 // Dark theme
 private val DarkColorScheme = darkColorScheme(
-    primary = SageGreen,
-    secondary = SoftForestGreen,
-    tertiary = Lilac,
-    background = Color(0xFF28332F),
-    surface = Color(0xFF394640),
-    onPrimary = Charcoal,
-    onSecondary = Cream,
-    onTertiary = Charcoal,
+    primary = LightTurquoise,
+    secondary = Lavender,
+    tertiary = LightLavender,
+    background = BlueGray,
+    surface = Color(0xFF465365),
+    onPrimary = BlueGray,
+    onSecondary = BlueGray,
+    onTertiary = BlueGray,
     onBackground = Cream,
     onSurface = Cream,
-    onSurfaceVariant = Color(0xFFB8C9BC),
+    onSurfaceVariant = LightTurquoise
 )
 
 // Light theme
 private val LightColorScheme = lightColorScheme(
-    primary = SoftForestGreen,
-    secondary = SageGreen,
-    tertiary = Lilac,
+    primary = TurquoiseGreen,
+    secondary = Lavender,
+    tertiary = LightLavender,
     background = Cream,
     surface = CardWhite,
     onPrimary = CardWhite,
-    onSecondary = ForestGreen,
-    onTertiary = Charcoal,
-    onBackground = Charcoal,
-    onSurface = Charcoal,
-    onSurfaceVariant = MutedGreen,
+    onSecondary = BlueGray,
+    onTertiary = BlueGray,
+    onBackground = BlueGray,
+    onSurface = BlueGray,
+    onSurfaceVariant = BlueGray
 )
 
 @Composable

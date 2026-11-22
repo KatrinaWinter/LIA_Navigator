@@ -31,9 +31,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.remember
-import com.example.lianavigator.ui.theme.MutedGreen
-import com.example.lianavigator.ui.theme.SageGreen
-import com.example.lianavigator.ui.theme.SoftForestGreen
+import com.example.lianavigator.ui.theme.BlueGray
+import com.example.lianavigator.ui.theme.LightTurquoise
+import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.viewmodel.CompanyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

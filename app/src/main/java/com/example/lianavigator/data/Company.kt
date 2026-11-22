@@ -5,5 +5,14 @@ data class Company(
     val name: String,
     val category: String,
     val websiteUrl: String? = null,
-    val isSaved: Boolean = false)
+    val isSaved: Boolean = false,
+    val status: CompanyStatus = CompanyStatus.SAVED
+)
 
+
+enum class CompanyStatus {
+    SAVED,
+    CONTACT_ONGOING,
+    APPLICATION_SENT,
+    LIA_CONFIRMED
+}
