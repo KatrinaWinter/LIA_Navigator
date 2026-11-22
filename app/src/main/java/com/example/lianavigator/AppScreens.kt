@@ -127,6 +127,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 fun WelcomeCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        border = BorderStroke(
+            1.dp,
+            TurquoiseGreen,
+        ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -161,6 +165,10 @@ fun StatCard(
         modifier = modifier
             .fillMaxWidth()
             .height(148.dp),
+        border = BorderStroke(
+            1.dp,
+            TurquoiseGreen,
+        ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
