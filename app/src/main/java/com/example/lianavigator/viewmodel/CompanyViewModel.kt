@@ -3,10 +3,11 @@ package com.example.lianavigator.viewmodel
 import com.example.lianavigator.data.Company
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import com.example.lianavigator.data.CompanyStatus
 import com.example.lianavigator.ui.CompanyUiState
 
-class CompanyViewModel {
+class CompanyViewModel : ViewModel() {
     val testCompany = listOf(
         Company(
             id = 1,
@@ -51,6 +52,21 @@ class CompanyViewModel {
 
         _uiState.value = _uiState.value.copy(
             companies = _uiState.value.companies + newCompany
+        )
+    }
+
+    fun updateCompanyStatus(
+        companyId: Int,
+        newStatus: CompanyStatus
+    ) {
+        _uiState.value = _uiState.value.copy(
+            companies = _uiState.value.companies.map { company ->
+                if (company.id == companyId) {
+                    company.copy(status = newStatus)
+                } else {
+                    company
+                }
+            }
         )
     }
 }

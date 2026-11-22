@@ -1,5 +1,6 @@
 package com.example.lianavigator
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,7 +55,13 @@ import com.example.lianavigator.data.CompanyStatus
 import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.ui.theme.LightLavender
 import androidx.compose.ui.graphics.Color
-
+import androidx.compose.material3.Surface
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import com.example.lianavigator.ui.theme.CelebrationRed
+import com.example.lianavigator.ui.theme.Cream
+import com.example.lianavigator.ui.theme.LightCelebrationRed
+import androidx.compose.foundation.layout.Box
 
 
 @Composable
@@ -275,7 +282,8 @@ fun CompanyScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredCompanies) { company ->
-                    CompanyCard(company = company)
+                    CompanyCard(company = company,
+                        viewModel= viewModel)
                 }
             }
         }
@@ -289,6 +297,7 @@ fun CompanyScreen(
             title = {
                 Text("Lägg till företag",)
             },
+            containerColor = MaterialTheme.colorScheme.surface,
             text = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -362,8 +371,10 @@ fun CompanyScreen(
 }
 
 @Composable
-fun CompanyCard(company: Company) {
+fun CompanyCard(company: Company,
+                viewModel: CompanyViewModel) {
     val (backgroundColor, borderColor) = companyStatusColor(company.status)
+    var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -380,89 +391,180 @@ fun CompanyCard(company: Company) {
     ) {
         val uriHandler = LocalUriHandler.current
 
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.Top
         ) {
-            Text(
-                text = company.name,
-                style = MaterialTheme.typography.titleLarge,
-                color = borderColor
-            )
 
-            Text(
-                text = company.category,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            company.websiteUrl?.let { url ->
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = url,
-                    modifier = Modifier.clickable {
-                        uriHandler.openUri(url)
-                    },
-                    textDecoration = TextDecoration.Underline,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Lavender
+                    text = company.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = borderColor
                 )
+
+                Text(
+                    text = company.category,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                company.websiteUrl?.let { url ->
+                    Text(
+                        text = url,
+                        modifier = Modifier.clickable {
+                            uriHandler.openUri(url)
+                        },
+                        textDecoration = TextDecoration.Underline,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Lavender
+                    )
+
+                }
+            }
+
+            Box {
+                Surface(
+                    modifier = Modifier.clickable {
+                        expanded = true
+                    },
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(50.dp),
+                    border = BorderStroke(1.dp, borderColor)
+                ) {
+                    Text(
+                        text = companyStatusText(company.status),
+                        modifier = Modifier.padding(
+                            horizontal = 10.dp,
+                            vertical = 6.dp
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = borderColor
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    },
+                    modifier = Modifier.width(190.dp),
+                    containerColor = MaterialTheme.colorScheme.surface
+                ) {
+                DropdownMenuItem(
+                    text = { Text("Sparat företag") },
+                    onClick = {
+                        viewModel.updateCompanyStatus(
+                            company.id,
+                            CompanyStatus.SAVED
+                        )
+                        expanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Kontakt pågår") },
+                    onClick = {
+                        viewModel.updateCompanyStatus(
+                            company.id,
+                            CompanyStatus.CONTACT_ONGOING
+                        )
+                        expanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Ansökan skickad") },
+                    onClick = {
+                        viewModel.updateCompanyStatus(
+                            company.id,
+                            CompanyStatus.APPLICATION_SENT
+                        )
+                        expanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("LIA bekräftad") },
+                    onClick = {
+                        viewModel.updateCompanyStatus(
+                            company.id,
+                            CompanyStatus.LIA_CONFIRMED
+                        )
+                        expanded = false
+                    }
+                )
+            }
             }
         }
     }
 }
 
-fun companyStatusColor(status: CompanyStatus): Pair<Color, Color> {
-    return when (status) {
-        CompanyStatus.SAVED ->
-            LightTurquoise to TurquoiseGreen
+            fun companyStatusColor(status: CompanyStatus): Pair<Color, Color> {
+                return when (status) {
+                    CompanyStatus.SAVED ->
+                        LightTurquoise to TurquoiseGreen
 
-        CompanyStatus.CONTACT_ONGOING ->
-            LightLavender to Lavender
+                    CompanyStatus.CONTACT_ONGOING ->
+                        LightLavender to Lavender
 
-        CompanyStatus.APPLICATION_SENT ->
-            Color(0xFFEEF3FF) to Color(0xFF7895C5)
+                    CompanyStatus.APPLICATION_SENT ->
+                        Color(0xFFEEF3FF) to Color(0xFF7895C5)
 
-        CompanyStatus.LIA_CONFIRMED ->
-            Color(0xFFEDF7EF) to Color(0xFF6B9B78)
-    }
-}
+                    CompanyStatus.LIA_CONFIRMED ->
+                        LightCelebrationRed to CelebrationRed
+                }
+            }
 
-@Composable
-fun CollaborationScreen(modifier: Modifier = Modifier) {
-    Text(
-        text = "Samarbeta",
-        modifier = modifier
-    )
-}
+            fun companyStatusText(status: CompanyStatus): String {
+                return when (status) {
+                    CompanyStatus.SAVED -> "Sparat företag"
+                    CompanyStatus.CONTACT_ONGOING -> "Kontakt pågår"
+                    CompanyStatus.APPLICATION_SENT -> "Ansökan skickad"
+                    CompanyStatus.LIA_CONFIRMED -> "LIA bekräftad"
+                }
+            }
 
-@Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
-    Text(
-        text = "Profil",
-        modifier = modifier
-    )
-}
+            @Composable
+            fun CollaborationScreen(modifier: Modifier = Modifier) {
+                Text(
+                    text = "Samarbeta",
+                    modifier = modifier
+                )
+            }
 
-@Composable
-fun ScreenHeader(
-    title: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+            @Composable
+            fun ProfileScreen(modifier: Modifier = Modifier) {
+                Text(
+                    text = "Profil",
+                    modifier = modifier
+                )
+            }
 
-        Spacer(modifier = Modifier.width(12.dp))
+            @Composable
+            fun ScreenHeader(
+                title: String,
+                modifier: Modifier = Modifier) {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Spacer(modifier = Modifier.width(12.dp))
 
 
 
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-        Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-    }
-}
+                }
+            }

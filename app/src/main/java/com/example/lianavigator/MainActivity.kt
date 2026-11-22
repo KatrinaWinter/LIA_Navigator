@@ -30,11 +30,12 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.runtime.remember
 import com.example.lianavigator.ui.theme.BlueGray
 import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.viewmodel.CompanyViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -42,13 +43,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val companyViewModel: CompanyViewModel = viewModel()
+
             LIANavigatorTheme {
                 var selectedItem by rememberSaveable {
                     mutableIntStateOf(0)
                 }
-                val companyViewModel = remember {
-                    CompanyViewModel()
-                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -144,12 +145,18 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     when (selectedItem) {
                         0 -> HomeScreen(
-                            modifier = Modifier.padding(innerPadding))
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
                         1 -> CompanyScreen(
                             modifier = Modifier.padding(innerPadding),
-                            viewModel = companyViewModel)
+                            viewModel = companyViewModel
+                        )
+
                         2 -> CollaborationScreen(
-                            modifier = Modifier.padding(innerPadding))
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
                         3 -> ProfileScreen(
                             modifier = Modifier.padding(innerPadding)
                         )
@@ -159,3 +166,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
