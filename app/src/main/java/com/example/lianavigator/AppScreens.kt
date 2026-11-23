@@ -62,6 +62,16 @@ import com.example.lianavigator.ui.theme.CelebrationRed
 import com.example.lianavigator.ui.theme.Cream
 import com.example.lianavigator.ui.theme.LightCelebrationRed
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.draw.shadow
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.runtime.CompositionLocalProvider
 
 
 @Composable
@@ -383,10 +393,16 @@ fun CompanyCard(company: Company,
                 viewModel: CompanyViewModel) {
     val (backgroundColor, borderColor) = companyStatusColor(company.status)
     var expanded by remember { mutableStateOf(false) }
+
+    var isEditing by remember { mutableStateOf(false) }
+    var editedName by remember { mutableStateOf(company.name) }
+    var editedCategory by remember { mutableStateOf(company.category) }
+    var editedWebsite by remember { mutableStateOf(company.websiteUrl ?: "") }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .heightIn(min = 100.dp)
             .border(
                 width = 1.dp,
                 color = borderColor,
@@ -409,104 +425,235 @@ fun CompanyCard(company: Company,
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = company.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = borderColor
-                )
-
-                Text(
-                    text = company.category,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                company.websiteUrl?.let { url ->
-                    Text(
-                        text = url,
-                        modifier = Modifier.clickable {
-                            uriHandler.openUri(url)
-                        },
-                        textDecoration = TextDecoration.Underline,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Lavender
+                if (isEditing) {
+                    val textSelectionColors = TextSelectionColors(
+                        handleColor = MaterialTheme.colorScheme.onSurface,
+                        backgroundColor = borderColor.copy(alpha = 0.3f)
                     )
 
-                }
-            }
+                    CompositionLocalProvider(
+                        LocalTextSelectionColors provides textSelectionColors
+                    ) {
+                        OutlinedTextField(
+                            value = editedName,
+                            onValueChange = { editedName = it },
+                            label = { Text("Företagsnamn") },
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = borderColor,
+                                unfocusedBorderColor = borderColor.copy(alpha = 0.6f),
+                                cursorColor = borderColor,
+                                focusedLabelColor = borderColor,
+                                unfocusedLabelColor = borderColor
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            singleLine = true
+                        )
 
-            Box {
-                Surface(
-                    modifier = Modifier.clickable {
-                        expanded = true
-                    },
-                    color = backgroundColor,
-                    shape = RoundedCornerShape(50.dp),
-                    border = BorderStroke(1.dp, borderColor)
-                ) {
+                        OutlinedTextField(
+                            value = editedCategory,
+                            onValueChange = { editedCategory = it },
+                            label = { Text("Kategori") },
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = borderColor,
+                                unfocusedBorderColor = borderColor.copy(alpha = 0.6f),
+                                cursorColor = borderColor,
+                                focusedLabelColor = borderColor,
+                                unfocusedLabelColor = borderColor
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            singleLine = true
+                        )
+
+                        OutlinedTextField(
+                            value = editedWebsite,
+                            onValueChange = { editedWebsite = it },
+                            label = { Text("Webbplats") },
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = borderColor,
+                                unfocusedBorderColor = borderColor.copy(alpha = 0.6f),
+                                cursorColor = borderColor,
+                                focusedLabelColor = borderColor,
+                                unfocusedLabelColor = borderColor
+                            ),
+                            shape = RoundedCornerShape(22.dp),
+                            singleLine = true
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = {
+                                editedName = company.name
+                                editedCategory = company.category
+                                editedWebsite = company.websiteUrl ?: ""
+                                isEditing = false
+                            }
+                        ) {
+                            Text("Avbryt")
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.updateCompany(
+                                    companyId = company.id,
+                                    name = editedName.trim(),
+                                    category = editedCategory.trim(),
+                                    websiteUrl = editedWebsite.trim().ifBlank { null }
+                                )
+                                isEditing = false
+                            },
+                            enabled = editedName.isNotBlank() &&
+                                    editedCategory.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = borderColor.copy(alpha = 0.15f),
+                                contentColor = borderColor,
+                                disabledContainerColor = borderColor.copy(alpha = 0.08f),
+                                disabledContentColor = borderColor.copy(alpha = 0.5f)
+                            )
+                        ) {
+                            Text("Spara")
+                        }
+                    }
+                } else {
                     Text(
-                        text = companyStatusText(company.status),
-                        modifier = Modifier.padding(
-                            horizontal = 10.dp,
-                            vertical = 6.dp
-                        ),
-                        style = MaterialTheme.typography.labelMedium,
+                        text = company.name,
+                        style = MaterialTheme.typography.titleLarge,
                         color = borderColor
                     )
+
+                    Text(
+                        text = company.category,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    company.websiteUrl?.let { url ->
+                        Text(
+                            text = url,
+                            modifier = Modifier.clickable {
+                                uriHandler.openUri(url)
+                            },
+                            textDecoration = TextDecoration.Underline,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Lavender
+                        )
+                    }
                 }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = {
-                        expanded = false
-                    },
-                    modifier = Modifier.width(190.dp),
-                    containerColor = MaterialTheme.colorScheme.surface
-                ) {
-                DropdownMenuItem(
-                    text = { Text("Sparat företag") },
-                    onClick = {
-                        viewModel.updateCompanyStatus(
-                            company.id,
-                            CompanyStatus.SAVED
-                        )
-                        expanded = false
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text("Kontakt pågår") },
-                    onClick = {
-                        viewModel.updateCompanyStatus(
-                            company.id,
-                            CompanyStatus.CONTACT_ONGOING
-                        )
-                        expanded = false
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text("Ansökan skickad") },
-                    onClick = {
-                        viewModel.updateCompanyStatus(
-                            company.id,
-                            CompanyStatus.APPLICATION_SENT
-                        )
-                        expanded = false
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text("LIA bekräftad") },
-                    onClick = {
-                        viewModel.updateCompanyStatus(
-                            company.id,
-                            CompanyStatus.LIA_CONFIRMED
-                        )
-                        expanded = false
-                    }
-                )
             }
+
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (!isEditing) {
+                    Surface(
+                        modifier = Modifier.clickable {
+                            expanded = true
+                        },
+                        color = borderColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(50.dp),
+                        border = BorderStroke(1.dp, borderColor)
+                    ) {
+                        Text(
+                            text = companyStatusText(company.status),
+                            modifier = Modifier.padding(
+                                horizontal = 10.dp,
+                                vertical = 6.dp
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = borderColor
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        },
+                        modifier = Modifier.width(190.dp),
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Sparat företag") },
+                            onClick = {
+                                viewModel.updateCompanyStatus(
+                                    company.id,
+                                    CompanyStatus.SAVED
+                                )
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("Kontakt pågår") },
+                            onClick = {
+                                viewModel.updateCompanyStatus(
+                                    company.id,
+                                    CompanyStatus.CONTACT_ONGOING
+                                )
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("Ansökan skickad") },
+                            onClick = {
+                                viewModel.updateCompanyStatus(
+                                    company.id,
+                                    CompanyStatus.APPLICATION_SENT
+                                )
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text("LIA bekräftad") },
+                            onClick = {
+                                viewModel.updateCompanyStatus(
+                                    company.id,
+                                    CompanyStatus.LIA_CONFIRMED
+                                )
+                                expanded = false
+                            }
+                        )
+                    }
+
+                if (!isEditing) {
+                    OutlinedButton(
+                        onClick = {
+                            isEditing = true
+                        },
+                        modifier = Modifier.height(26.dp),
+                        border = null,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = borderColor.copy(alpha = 0.15f),
+                            contentColor = borderColor
+                        ),
+                        contentPadding = PaddingValues(
+                            horizontal = 10.dp,
+                            vertical = 0.dp
+                        )
+                    ) {
+                        Text(
+                            text = "Redigera",
+                            color = borderColor,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+                }
             }
         }
     }

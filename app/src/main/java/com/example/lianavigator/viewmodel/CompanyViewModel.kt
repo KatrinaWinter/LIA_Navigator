@@ -69,5 +69,27 @@ class CompanyViewModel : ViewModel() {
             }
         )
     }
+
+    fun updateCompany(
+        companyId: Int,
+        name: String,
+        category: String,
+        websiteUrl: String?
+    ) {
+        _uiState.value = _uiState.value.copy(
+            companies = _uiState.value.companies.map { company ->
+                if (company.id == companyId) {
+                    company.copy(
+                        name = name,
+                        category = category,
+                        websiteUrl = websiteUrl
+                    )
+                } else {
+                    company
+                }
+            }
+        )
+    }
+
 }
 
