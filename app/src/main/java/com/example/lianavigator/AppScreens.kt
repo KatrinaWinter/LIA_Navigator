@@ -1,6 +1,7 @@
 package com.example.lianavigator
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,7 +72,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 
 
 @Composable
@@ -395,6 +401,7 @@ fun CompanyCard(company: Company,
     var expanded by remember { mutableStateOf(false) }
 
     var isEditing by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(company.name) }
     var editedCategory by remember { mutableStateOf(company.category) }
     var editedWebsite by remember { mutableStateOf(company.websiteUrl ?: "") }
@@ -418,7 +425,12 @@ fun CompanyCard(company: Company,
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                    bottom = 4.dp
+                ),
             verticalAlignment = Alignment.Top
         ) {
 
@@ -656,6 +668,68 @@ fun CompanyCard(company: Company,
                 }
             }
         }
+
+        if (!isEditing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 0.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = {
+                        showDeleteDialog = true
+                    },
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.trash_bin_outline_bold),
+                        contentDescription = "Ta bort företag",
+                        modifier = Modifier.size(18.dp),
+                        colorFilter = ColorFilter.tint(borderColor)
+                    )
+                }
+            }
+        }
+
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+            },
+            title = {
+                Text("Ta bort företag?")
+            },
+            text = {
+                Text("Vill du ta bort ${company.name} från din företagslista? Åtgärden kan inte ångras.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteCompany(company.id)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CelebrationRed.copy(alpha = 0.70f),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Ta bort")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                    }
+                ) {
+                    Text("Avbryt")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     }
 }
 

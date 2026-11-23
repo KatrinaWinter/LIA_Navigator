@@ -91,5 +91,13 @@ class CompanyViewModel : ViewModel() {
         )
     }
 
+    fun deleteCompany(companyId: Int) {
+        _uiState.value = _uiState.value.copy(
+            companies = _uiState.value.companies.filter { company ->
+                company.id != companyId
+            }
+        )
+    }
+
 }
 
