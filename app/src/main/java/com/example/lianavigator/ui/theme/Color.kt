@@ -18,5 +18,5 @@ val CardWhite = Color(0xFFFFFEFC)
 // Text colors
 val BlueGray = Color(0xFF39465C)
 
-val CelebrationRed = Color(0xFFC97978)
-val LightCelebrationRed = Color(0xFFFFF0EF)
+val CelebrationRed = Color(0xFFC9789B)
+val LightCelebrationRed = Color(0xFFFFEFEF)

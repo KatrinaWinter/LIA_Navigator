@@ -121,7 +121,8 @@ fun HomeScreen(
                 totalCount = totalCount,
                 icon = Icons.Default.Business,
                 onClick = { onStatusSelected(CompanyStatus.SAVED) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                statusColor = companyStatusColor(CompanyStatus.SAVED).second,
             )
 
             StatCard(
@@ -129,7 +130,8 @@ fun HomeScreen(
                 count = ongoingCount,
                 icon = Icons.Default.Groups,
                 onClick = { onStatusSelected(CompanyStatus.CONTACT_ONGOING) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                statusColor = companyStatusColor(CompanyStatus.CONTACT_ONGOING).second
             )
         }
 
@@ -143,7 +145,8 @@ fun HomeScreen(
                 count = applicationCount,
                 icon = Icons.AutoMirrored.Filled.Send,
                 onClick = { onStatusSelected(CompanyStatus.APPLICATION_SENT)},
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                statusColor = companyStatusColor(CompanyStatus.APPLICATION_SENT).second
             )
 
             StatCard(
@@ -151,7 +154,8 @@ fun HomeScreen(
                 count = confirmedCount,
                 icon = Icons.Default.CheckCircle,
                 onClick = { onStatusSelected(CompanyStatus.LIA_CONFIRMED)},
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                statusColor = companyStatusColor(CompanyStatus.LIA_CONFIRMED).second
             )
         }
     }
@@ -194,6 +198,7 @@ fun StatCard(
     count: Int,
     totalCount: Int? = null,
     icon: ImageVector,
+    statusColor: Color = TurquoiseGreen,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -204,7 +209,7 @@ fun StatCard(
             .clickable { onClick() },
         border = BorderStroke(
             1.dp,
-            TurquoiseGreen,
+            statusColor
         ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -218,13 +223,13 @@ fun StatCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = statusColor
             )
 
             Text(
                 text = if (totalCount != null) "$count av $totalCount" else count.toString(),
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = statusColor
             )
 
             Text(
