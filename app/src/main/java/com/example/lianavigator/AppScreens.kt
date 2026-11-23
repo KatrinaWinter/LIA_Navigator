@@ -78,10 +78,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.clickable
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CompanyViewModel,
+    onStatusSelected: (CompanyStatus) -> Unit
+){
+    val companies = viewModel.uiState.value.companies
+    val totalCount = companies.size
+    val savedCount = companies.count { it.status == CompanyStatus.SAVED }
+    val ongoingCount = companies.count { it.status == CompanyStatus.CONTACT_ONGOING }
+    val applicationCount = companies.count { it.status == CompanyStatus.APPLICATION_SENT }
+    val confirmedCount = companies.count { it.status == CompanyStatus.LIA_CONFIRMED }
+
+
     Column(modifier = modifier
         .fillMaxSize()
         .padding(20.dp)) {
@@ -103,16 +116,19 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             StatCard(
-                title = "Sparade företag",
-                count = 8,
+                title = "Företag",
+                count = savedCount,
+                totalCount = totalCount,
                 icon = Icons.Default.Business,
+                onClick = { onStatusSelected(CompanyStatus.SAVED) },
                 modifier = Modifier.weight(1f)
             )
 
             StatCard(
                 title = "Pågående kontakter",
-                count = 3,
+                count = ongoingCount,
                 icon = Icons.Default.Groups,
+                onClick = { onStatusSelected(CompanyStatus.CONTACT_ONGOING) },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -124,15 +140,17 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) {
             StatCard(
                 title = "Skickade ansökningar",
-                count = 2,
+                count = applicationCount,
                 icon = Icons.AutoMirrored.Filled.Send,
+                onClick = { onStatusSelected(CompanyStatus.APPLICATION_SENT)},
                 modifier = Modifier.weight(1f)
             )
 
             StatCard(
                 title = "Bekräftad LIA",
-                count = 0,
+                count = confirmedCount,
                 icon = Icons.Default.CheckCircle,
+                onClick = { onStatusSelected(CompanyStatus.LIA_CONFIRMED)},
                 modifier = Modifier.weight(1f)
             )
         }
@@ -174,13 +192,16 @@ fun WelcomeCard() {
 fun StatCard(
     title: String,
     count: Int,
+    totalCount: Int? = null,
     icon: ImageVector,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(148.dp),
+            .height(148.dp)
+            .clickable { onClick() },
         border = BorderStroke(
             1.dp,
             TurquoiseGreen,
@@ -201,7 +222,7 @@ fun StatCard(
             )
 
             Text(
-                text = count.toString(),
+                text = if (totalCount != null) "$count av $totalCount" else count.toString(),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -220,7 +241,8 @@ fun StatCard(
 @Composable
 fun CompanyScreen(
     modifier: Modifier = Modifier,
-    viewModel: CompanyViewModel
+    viewModel: CompanyViewModel,
+    selectedStatus: CompanyStatus? = null
 ) {
     val uiState = viewModel.uiState.value
     var companyName by remember { mutableStateOf("") }
@@ -231,8 +253,15 @@ fun CompanyScreen(
     var nameError by remember { mutableStateOf(false) }
     var categoryError by remember { mutableStateOf(false) }
     val filteredCompanies = uiState.companies.filter { company ->
-        company.name.startsWith(searchQuery, ignoreCase = true) ||
-                company.category.startsWith(searchQuery, ignoreCase = true)
+
+        val matchesSearch =
+            company.name.startsWith(searchQuery, ignoreCase = true) ||
+                    company.category.startsWith(searchQuery, ignoreCase = true)
+
+        val matchesStatus =
+            selectedStatus == null || company.status == selectedStatus
+
+        matchesSearch && matchesStatus
     }
 
     Column(

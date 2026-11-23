@@ -30,11 +30,13 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.runtime.mutableStateOf
 import com.example.lianavigator.ui.theme.BlueGray
 import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.viewmodel.CompanyViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lianavigator.data.CompanyStatus
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +50,9 @@ class MainActivity : ComponentActivity() {
             LIANavigatorTheme {
                 var selectedItem by rememberSaveable {
                     mutableIntStateOf(0)
+                }
+                var selectedStatus by rememberSaveable {
+                    mutableStateOf<CompanyStatus?>(null)
                 }
 
                 Scaffold(
@@ -95,7 +100,9 @@ class MainActivity : ComponentActivity() {
 
                             NavigationBarItem(
                                 selected = selectedItem == 1,
-                                onClick = { selectedItem = 1 },
+                                onClick = {
+                                    selectedItem = 1
+                                    selectedStatus = null},
                                 icon = {
                                     Icon(Icons.Default.Business, contentDescription = "Företag")
                                 },
@@ -145,12 +152,18 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     when (selectedItem) {
                         0 -> HomeScreen(
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding),
+                            viewModel = companyViewModel,
+                            onStatusSelected = { status ->
+                                selectedStatus = status
+                                selectedItem = 1
+                            }
                         )
 
                         1 -> CompanyScreen(
                             modifier = Modifier.padding(innerPadding),
-                            viewModel = companyViewModel
+                            viewModel = companyViewModel,
+                            selectedStatus = selectedStatus
                         )
 
                         2 -> CollaborationScreen(
