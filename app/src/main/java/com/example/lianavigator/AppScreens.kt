@@ -328,9 +328,24 @@ fun CompanyScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        if (filteredCompanies.isEmpty()) {
+        if (uiState.companies.isEmpty()) {
             Text(
-                text = "Inga företag hittades. Prova ett annat sökord.",
+                text = "Du har inte lagt till några företag ännu.",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else if (filteredCompanies.isEmpty() && searchQuery.isNotBlank() &&
+            selectedStatus == null) {
+            Text(
+                text = "Inga företag matchar din sökning. Prova ett annat sökord.",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else if (filteredCompanies.isEmpty()) {
+            Text(
+                text = "Det finns inga företag med den här statusen ännu.",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -362,7 +377,9 @@ fun CompanyScreen(
                 ) {
                     OutlinedTextField(
                         value = companyName,
-                        onValueChange = { companyName = it },
+                        onValueChange = {
+                            companyName = it
+                            nameError = false },
                         label = { Text("Företagsnamn",
                             style = MaterialTheme.typography.bodyMedium) },
                         isError = nameError,
@@ -377,7 +394,9 @@ fun CompanyScreen(
 
                     OutlinedTextField(
                         value = companyCategory,
-                        onValueChange = { companyCategory = it },
+                        onValueChange = {
+                            companyCategory = it
+                            categoryError = false },
                         label = { Text("Kategori",
                             style = MaterialTheme.typography.bodyMedium) },
                         isError = categoryError,
