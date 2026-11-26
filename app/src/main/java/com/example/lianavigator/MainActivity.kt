@@ -37,6 +37,11 @@ import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.viewmodel.CompanyViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lianavigator.data.CompanyStatus
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +65,12 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text("Ⓛ LIA Navigator")
+                                Image(
+                                    painter = painterResource(R.drawable.lia_navigator_logo),
+                                    contentDescription = "LIA Navigator",
+                                    modifier = Modifier.height(100.dp),
+                                    contentScale = ContentScale.Fit
+                                )
                             },
                             actions = {
                                 IconButton(onClick = { }) {
