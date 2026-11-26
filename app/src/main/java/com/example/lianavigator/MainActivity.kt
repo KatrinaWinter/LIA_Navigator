@@ -33,7 +33,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.mutableStateOf
 import com.example.lianavigator.ui.theme.BlueGray
 import com.example.lianavigator.ui.theme.LightTurquoise
-import com.example.lianavigator.ui.theme.LightTurquoise
 import com.example.lianavigator.viewmodel.CompanyViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lianavigator.data.CompanyStatus
