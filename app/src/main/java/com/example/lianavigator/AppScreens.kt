@@ -257,6 +257,12 @@ fun CompanyScreen(
     var searchQuery by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf(false) }
     var categoryError by remember { mutableStateOf(false) }
+    var editingCompanyId by remember {
+        mutableStateOf<Int?>(null)
+    }
+    var showEditingMessage by remember {
+        mutableStateOf(false)
+    }
     val filteredCompanies = uiState.companies.filter { company ->
 
         val matchesSearch =
@@ -355,8 +361,19 @@ fun CompanyScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredCompanies) { company ->
-                    CompanyCard(company = company,
-                        viewModel= viewModel)
+                    CompanyCard(
+                        company = company,
+                        viewModel = viewModel,
+                        editingCompanyId = editingCompanyId,
+                        onEditingChange = {
+                            editingCompanyId = it
+                            showEditingMessage = false
+                        },
+                        showEditingMessage = showEditingMessage,
+                        onEditingMessageChange = { show ->
+                            showEditingMessage = show
+                        }
+                    )
                 }
             }
         }
@@ -448,12 +465,18 @@ fun CompanyScreen(
 }
 
 @Composable
-fun CompanyCard(company: Company,
-                viewModel: CompanyViewModel) {
+fun CompanyCard(
+    company: Company,
+    viewModel: CompanyViewModel,
+    editingCompanyId: Int?,
+    onEditingChange: (Int?) -> Unit,
+    showEditingMessage: Boolean,
+    onEditingMessageChange: (Boolean) -> Unit
+) {
     val (backgroundColor, borderColor) = companyStatusColor(company.status)
     var expanded by remember { mutableStateOf(false) }
 
-    var isEditing by remember { mutableStateOf(false) }
+    val isEditing = editingCompanyId == company.id
     var showDeleteDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf(company.name) }
     var editedCategory by remember { mutableStateOf(company.category) }
@@ -463,6 +486,11 @@ fun CompanyCard(company: Company,
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 100.dp)
+            .clickable(
+                enabled = editingCompanyId != null && !isEditing
+            ) {
+                onEditingMessageChange(true)
+            }
             .border(
                 width = 1.dp,
                 color = borderColor,
@@ -492,7 +520,7 @@ fun CompanyCard(company: Company,
             ) {
                 if (isEditing) {
                     val textSelectionColors = TextSelectionColors(
-                        handleColor = MaterialTheme.colorScheme.onSurface,
+                        handleColor = borderColor,
                         backgroundColor = borderColor.copy(alpha = 0.3f)
                     )
 
@@ -501,7 +529,10 @@ fun CompanyCard(company: Company,
                     ) {
                         OutlinedTextField(
                             value = editedName,
-                            onValueChange = { editedName = it },
+                            onValueChange = {
+                                editedName = it
+                                onEditingMessageChange(false)
+                            },
                             label = { Text("Företagsnamn") },
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurface
@@ -519,7 +550,10 @@ fun CompanyCard(company: Company,
 
                         OutlinedTextField(
                             value = editedCategory,
-                            onValueChange = { editedCategory = it },
+                            onValueChange = {
+                                editedCategory = it
+                                onEditingMessageChange(false)
+                            },
                             label = { Text("Kategori") },
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurface
@@ -537,7 +571,10 @@ fun CompanyCard(company: Company,
 
                         OutlinedTextField(
                             value = editedWebsite,
-                            onValueChange = { editedWebsite = it },
+                            onValueChange = {
+                                editedWebsite = it
+                                onEditingMessageChange(false)
+                            },
                             label = { Text("Webbplats") },
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onSurface
@@ -553,6 +590,15 @@ fun CompanyCard(company: Company,
                             singleLine = true
                         )
                     }
+
+                    if (isEditing && showEditingMessage) {
+                        Text(
+                            text = "Vänligen spara eller avbryt om du vill gå vidare.",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
@@ -563,8 +609,11 @@ fun CompanyCard(company: Company,
                                 editedName = company.name
                                 editedCategory = company.category
                                 editedWebsite = company.websiteUrl ?: ""
-                                isEditing = false
-                            }
+                                onEditingChange(null)
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = borderColor
+                            )
                         ) {
                             Text("Avbryt")
                         }
@@ -577,7 +626,7 @@ fun CompanyCard(company: Company,
                                     category = editedCategory.trim(),
                                     websiteUrl = editedWebsite.trim().ifBlank { null }
                                 )
-                                isEditing = false
+                                onEditingChange(null)
                             },
                             enabled = editedName.isNotBlank() &&
                                     editedCategory.isNotBlank(),
@@ -698,9 +747,17 @@ fun CompanyCard(company: Company,
                 if (!isEditing) {
                     OutlinedButton(
                         onClick = {
-                            isEditing = true
+                            if (editingCompanyId != null) {
+                                onEditingMessageChange(true)
+                            } else {
+                                editedName = company.name
+                                editedCategory = company.category
+                                editedWebsite = company.websiteUrl ?: ""
+                                onEditingChange(company.id)
+                            }
                         },
-                        modifier = Modifier.height(26.dp),
+
+                        modifier = Modifier.height(20.dp),
                         border = null,
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = borderColor.copy(alpha = 0.15f),
@@ -736,9 +793,9 @@ fun CompanyCard(company: Company,
                     modifier = Modifier.size(28.dp)
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.trash_bin_outline_bold),
+                        painter = painterResource(R.drawable.trash_bin),
                         contentDescription = "Ta bort företag",
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(16.dp),
                         colorFilter = ColorFilter.tint(borderColor)
                     )
                 }
