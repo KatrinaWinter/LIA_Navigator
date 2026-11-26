@@ -79,6 +79,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.clickable
+import com.example.lianavigator.ui.theme.BlueGray
 
 
 @Composable
@@ -122,16 +123,22 @@ fun HomeScreen(
                 icon = Icons.Default.Business,
                 onClick = { onStatusSelected(CompanyStatus.SAVED) },
                 modifier = Modifier.weight(1f),
-                statusColor = companyStatusColor(CompanyStatus.SAVED).second,
+                statusColor = companyStatusColor(
+                    CompanyStatus.SAVED,
+                    MaterialTheme.colorScheme.background == BlueGray
+                ).second
             )
 
             StatCard(
-                title = "Pågående kontakter",
-                count = ongoingCount,
-                icon = Icons.Default.Groups,
-                onClick = { onStatusSelected(CompanyStatus.CONTACT_ONGOING) },
+                title = "Skickade ansökningar",
+                count = applicationCount,
+                icon = Icons.AutoMirrored.Filled.Send,
+                onClick = { onStatusSelected(CompanyStatus.APPLICATION_SENT)},
                 modifier = Modifier.weight(1f),
-                statusColor = companyStatusColor(CompanyStatus.CONTACT_ONGOING).second
+                statusColor = companyStatusColor(
+                    CompanyStatus.APPLICATION_SENT,
+                    MaterialTheme.colorScheme.background == BlueGray
+                ).second
             )
         }
 
@@ -140,13 +147,17 @@ fun HomeScreen(
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             StatCard(
-                title = "Skickade ansökningar",
-                count = applicationCount,
-                icon = Icons.AutoMirrored.Filled.Send,
-                onClick = { onStatusSelected(CompanyStatus.APPLICATION_SENT)},
+                title = "Pågående kontakter",
+                count = ongoingCount,
+                icon = Icons.Default.Groups,
+                onClick = { onStatusSelected(CompanyStatus.CONTACT_ONGOING) },
                 modifier = Modifier.weight(1f),
-                statusColor = companyStatusColor(CompanyStatus.APPLICATION_SENT).second
+                statusColor = companyStatusColor(
+                    CompanyStatus.CONTACT_ONGOING,
+                    MaterialTheme.colorScheme.background == BlueGray
+                ).second
             )
 
             StatCard(
@@ -155,7 +166,10 @@ fun HomeScreen(
                 icon = Icons.Default.CheckCircle,
                 onClick = { onStatusSelected(CompanyStatus.LIA_CONFIRMED)},
                 modifier = Modifier.weight(1f),
-                statusColor = companyStatusColor(CompanyStatus.LIA_CONFIRMED).second
+                statusColor = companyStatusColor(
+                    CompanyStatus.LIA_CONFIRMED,
+                    MaterialTheme.colorScheme.background == BlueGray
+                ).second
             )
         }
     }
@@ -473,7 +487,11 @@ fun CompanyCard(
     showEditingMessage: Boolean,
     onEditingMessageChange: (Boolean) -> Unit
 ) {
-    val (backgroundColor, borderColor) = companyStatusColor(company.status)
+    val isDarkTheme =
+        MaterialTheme.colorScheme.background == BlueGray
+
+    val (backgroundColor, borderColor) =
+        companyStatusColor(company.status, isDarkTheme)
     var expanded by remember { mutableStateOf(false) }
 
     val isEditing = editingCompanyId == company.id
@@ -700,7 +718,12 @@ fun CompanyCard(
                         containerColor = MaterialTheme.colorScheme.surface
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Sparat företag") },
+                            text = {
+                                Text(
+                                    text = "Sparat företag",
+                                    color = companyStatusColor(CompanyStatus.SAVED).second
+                                )
+                            },
                             onClick = {
                                 viewModel.updateCompanyStatus(
                                     company.id,
@@ -711,18 +734,12 @@ fun CompanyCard(
                         )
 
                         DropdownMenuItem(
-                            text = { Text("Kontakt pågår") },
-                            onClick = {
-                                viewModel.updateCompanyStatus(
-                                    company.id,
-                                    CompanyStatus.CONTACT_ONGOING
+                            text = {
+                                Text(
+                                    text = "Ansökan skickad",
+                                    color = companyStatusColor(CompanyStatus.APPLICATION_SENT).second
                                 )
-                                expanded = false
-                            }
-                        )
-
-                        DropdownMenuItem(
-                            text = { Text("Ansökan skickad") },
+                            },
                             onClick = {
                                 viewModel.updateCompanyStatus(
                                     company.id,
@@ -733,7 +750,28 @@ fun CompanyCard(
                         )
 
                         DropdownMenuItem(
-                            text = { Text("LIA bekräftad") },
+                            text = {
+                                Text(
+                                    text = "Kontakt pågår",
+                                    color = companyStatusColor(CompanyStatus.CONTACT_ONGOING).second
+                                )
+                            },
+                            onClick = {
+                                viewModel.updateCompanyStatus(
+                                    company.id,
+                                    CompanyStatus.CONTACT_ONGOING
+                                )
+                                expanded = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "LIA bekräftad",
+                                    color = companyStatusColor(CompanyStatus.LIA_CONFIRMED).second
+                                )
+                            },
                             onClick = {
                                 viewModel.updateCompanyStatus(
                                     company.id,
@@ -843,27 +881,37 @@ fun CompanyCard(
     }
 }
 
-            fun companyStatusColor(status: CompanyStatus): Pair<Color, Color> {
-                return when (status) {
-                    CompanyStatus.SAVED ->
-                        LightTurquoise to TurquoiseGreen
+fun companyStatusColor(
+    status: CompanyStatus,
+    isDarkTheme: Boolean = false
+): Pair<Color, Color>{
 
-                    CompanyStatus.CONTACT_ONGOING ->
-                        LightLavender to Lavender
+    val statusColor = when (status) {
+        CompanyStatus.SAVED -> TurquoiseGreen
+        CompanyStatus.CONTACT_ONGOING -> Lavender
+        CompanyStatus.APPLICATION_SENT -> Color(0xFF7895C5)
+        CompanyStatus.LIA_CONFIRMED -> CelebrationRed
+    }
 
-                    CompanyStatus.APPLICATION_SENT ->
-                        Color(0xFFEEF3FF) to Color(0xFF7895C5)
+    val backgroundColor = if (isDarkTheme) {
+        Color(0xFF465365)
+    } else {
+        when (status) {
+            CompanyStatus.SAVED -> LightTurquoise
+            CompanyStatus.CONTACT_ONGOING -> LightLavender
+            CompanyStatus.APPLICATION_SENT -> Color(0xFFEEF3FF)
+            CompanyStatus.LIA_CONFIRMED -> LightCelebrationRed
+        }
+    }
 
-                    CompanyStatus.LIA_CONFIRMED ->
-                        LightCelebrationRed to CelebrationRed
-                }
-            }
+    return backgroundColor to statusColor
+}
 
             fun companyStatusText(status: CompanyStatus): String {
                 return when (status) {
                     CompanyStatus.SAVED -> "Sparat företag"
-                    CompanyStatus.CONTACT_ONGOING -> "Kontakt pågår"
                     CompanyStatus.APPLICATION_SENT -> "Ansökan skickad"
+                    CompanyStatus.CONTACT_ONGOING -> "Kontakt pågår"
                     CompanyStatus.LIA_CONFIRMED -> "LIA bekräftad"
                 }
             }
