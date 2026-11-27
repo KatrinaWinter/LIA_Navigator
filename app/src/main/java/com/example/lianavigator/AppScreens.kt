@@ -81,14 +81,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.clickable
 import com.example.lianavigator.ui.theme.BlueGray
 
-
+// Displays an overview of the user's LIA progress and company statistics.
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: CompanyViewModel,
     onStatusSelected: (CompanyStatus) -> Unit
 ){
+    // Retrieves the company list from the ViewModel.
     val companies = viewModel.uiState.value.companies
+
+    // Counts all companies and groups them by their current status.
     val totalCount = companies.size
     val savedCount = companies.count { it.status == CompanyStatus.SAVED }
     val ongoingCount = companies.count { it.status == CompanyStatus.CONTACT_ONGOING }
@@ -96,6 +99,7 @@ fun HomeScreen(
     val confirmedCount = companies.count { it.status == CompanyStatus.LIA_CONFIRMED }
 
 
+    // Arranges the overview content vertically.
     Column(modifier = modifier
         .fillMaxSize()
         .padding(20.dp)) {
@@ -116,6 +120,7 @@ fun HomeScreen(
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Displays company statistics. Clicking a card filters the company list by status.
             StatCard(
                 title = "Företag",
                 count = savedCount,
@@ -129,6 +134,7 @@ fun HomeScreen(
                 ).second
             )
 
+            // Displays company statistics. Clicking a card filters the company list by status.
             StatCard(
                 title = "Skickade ansökningar",
                 count = applicationCount,
@@ -148,6 +154,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
+            // Displays company statistics. Clicking a card filters the company list by status.
             StatCard(
                 title = "Pågående kontakter",
                 count = ongoingCount,
@@ -160,6 +167,7 @@ fun HomeScreen(
                 ).second
             )
 
+            // Displays company statistics. Clicking a card filters the company list by status.
             StatCard(
                 title = "Bekräftad LIA",
                 count = confirmedCount,
@@ -175,6 +183,7 @@ fun HomeScreen(
     }
 }
 
+// Displays a welcome message and a short introduction to the app.
 @Composable
 fun WelcomeCard() {
     Card(
@@ -206,6 +215,7 @@ fun WelcomeCard() {
     }
 }
 
+// Reusable card that displays a statistic and navigates to the selected status.
 @Composable
 fun StatCard(
     title: String,
@@ -216,6 +226,7 @@ fun StatCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Makes the entire card clickable and applies the selected status color.
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -240,6 +251,7 @@ fun StatCard(
                 tint = statusColor
             )
 
+            // Displays the count, optionally showing it in relation to the total.
             Text(
                 text = if (totalCount != null) "$count av $totalCount" else count.toString(),
                 style = MaterialTheme.typography.headlineMedium,
@@ -256,39 +268,50 @@ fun StatCard(
 }
 
 
-
+// Displays the company list and handles searching, filtering and adding companies.
 @Composable
 fun CompanyScreen(
     modifier: Modifier = Modifier,
     viewModel: CompanyViewModel,
     selectedStatus: CompanyStatus? = null
 ) {
+    // Retrieves the current UI state from the ViewModel.
     val uiState = viewModel.uiState.value
+
+    // Holds the input values and visibility states for the add company dialog.
     var companyName by remember { mutableStateOf("") }
     var companyCategory by remember { mutableStateOf("") }
     var companyWebsite by remember { mutableStateOf("") }
     var showAddDialog by remember { mutableStateOf(false) }
+
+    // Holds the search query and validation error states.
     var searchQuery by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf(false) }
     var categoryError by remember { mutableStateOf(false) }
-    var editingCompanyId by remember {
-        mutableStateOf<Int?>(null)
-    }
-    var showEditingMessage by remember {
-        mutableStateOf(false)
-    }
+
+    // Tracks which company is currently being edited.
+    var editingCompanyId by remember { mutableStateOf<Int?>(null) }
+
+    // Controls the message shown when another company is being edited.
+    var showEditingMessage by remember { mutableStateOf(false) }
+
+    // Filters companies by name, category and selected status.
     val filteredCompanies = uiState.companies.filter { company ->
 
+        // Checks whether the name or category starts with the search query.
         val matchesSearch =
             company.name.startsWith(searchQuery, ignoreCase = true) ||
                     company.category.startsWith(searchQuery, ignoreCase = true)
 
+        // Shows all statuses when no specific status filter is selected.
         val matchesStatus =
             selectedStatus == null || company.status == selectedStatus
 
+        // A company must match both the search query and the selected status.
         matchesSearch && matchesStatus
     }
 
+    // Arranges the company screen content vertically.
     Column(
         modifier = modifier.padding(20.dp)
     ) {
@@ -297,6 +320,7 @@ fun CompanyScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Opens the dialog for adding a new company.
             FilledIconButton(
                 onClick = { showAddDialog = true },
                 modifier = Modifier.size(28.dp),
@@ -321,6 +345,7 @@ fun CompanyScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Search field for filtering companies by name or category.
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -348,6 +373,8 @@ fun CompanyScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Displays different messages depending on whether companies are available,
+        // whether the search has results or whether the selected status has matches.
         if (uiState.companies.isEmpty()) {
             Text(
                 text = "Du har inte lagt till några företag ännu.",
@@ -371,10 +398,12 @@ fun CompanyScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
+            // Displays the filtered companies in a scrollable list.
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredCompanies) { company ->
+                    // Passes company data and editing state to each company card.
                     CompanyCard(
                         company = company,
                         viewModel = viewModel,
@@ -393,6 +422,7 @@ fun CompanyScreen(
         }
     }
 
+    // Shows the add company dialog when requested.
     if (showAddDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -406,6 +436,7 @@ fun CompanyScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // Input field for the company name with validation.
                     OutlinedTextField(
                         value = companyName,
                         onValueChange = {
@@ -423,6 +454,7 @@ fun CompanyScreen(
                         shape = RoundedCornerShape(20.dp)
                     )
 
+                    // Input field for the company category with validation.
                     OutlinedTextField(
                         value = companyCategory,
                         onValueChange = {
@@ -440,6 +472,7 @@ fun CompanyScreen(
                         shape = RoundedCornerShape(20.dp)
                     )
 
+                    // Optional input field for the company website.
                     OutlinedTextField(
                         value = companyWebsite,
                         onValueChange = { companyWebsite = it },
@@ -450,6 +483,7 @@ fun CompanyScreen(
                     )
                 }
             },
+            // Validates the required fields and saves the company.
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -457,12 +491,14 @@ fun CompanyScreen(
                         categoryError = companyCategory.isBlank()
 
                         if (!nameError && !categoryError) {
+                            // Adds the company to the ViewModel if all required fields are valid.
                             viewModel.addCompany(
                                 name = companyName,
                                 category = companyCategory,
                                 websiteUrl = companyWebsite.takeIf { it.isNotBlank() }
                             )
 
+                            // Clears the input fields and closes the dialog after saving.
                             companyName = ""
                             companyCategory = ""
                             companyWebsite = ""
@@ -478,6 +514,7 @@ fun CompanyScreen(
 
 }
 
+// Displays a company card with options to edit, update status and delete the company.
 @Composable
 fun CompanyCard(
     company: Company,
@@ -487,19 +524,29 @@ fun CompanyCard(
     showEditingMessage: Boolean,
     onEditingMessageChange: (Boolean) -> Unit
 ) {
+    // Checks whether the app is using the dark theme.
     val isDarkTheme =
         MaterialTheme.colorScheme.background == BlueGray
 
+    // Gets the background and border colors based on the company's status.
     val (backgroundColor, borderColor) =
         companyStatusColor(company.status, isDarkTheme)
+
+    // Controls the visibility of the status dropdown menu.
     var expanded by remember { mutableStateOf(false) }
 
+    // Checks whether this company is currently being edited.
     val isEditing = editingCompanyId == company.id
+
+    // Controls the delete confirmation dialog.
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Holds the temporary values while editing the company.
     var editedName by remember { mutableStateOf(company.name) }
     var editedCategory by remember { mutableStateOf(company.category) }
     var editedWebsite by remember { mutableStateOf(company.websiteUrl ?: "") }
 
+    // Creates the card and prevents editing multiple companies at the same time.
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -519,6 +566,7 @@ fun CompanyCard(
             containerColor = backgroundColor
         )
     ) {
+        // Provides access to open website links.
         val uriHandler = LocalUriHandler.current
 
         Row(
@@ -536,12 +584,15 @@ fun CompanyCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+
+                // Shows editable text fields when the company is in edit mode.
                 if (isEditing) {
                     val textSelectionColors = TextSelectionColors(
                         handleColor = borderColor,
                         backgroundColor = borderColor.copy(alpha = 0.3f)
                     )
 
+                    // Applies custom text selection colors to the input fields.
                     CompositionLocalProvider(
                         LocalTextSelectionColors provides textSelectionColors
                     ) {
@@ -609,6 +660,7 @@ fun CompanyCard(
                         )
                     }
 
+                    // Displays a warning if the user tries to edit another company.
                     if (isEditing && showEditingMessage) {
                         Text(
                             text = "Vänligen spara eller avbryt om du vill gå vidare.",
@@ -622,6 +674,8 @@ fun CompanyCard(
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
+                        // Discards the changes and restores the original values.
                         TextButton(
                             onClick = {
                                 editedName = company.name
@@ -636,6 +690,7 @@ fun CompanyCard(
                             Text("Avbryt")
                         }
 
+                        // Saves the updated company information.
                         Button(
                             onClick = {
                                 viewModel.updateCompany(
@@ -658,6 +713,8 @@ fun CompanyCard(
                             Text("Spara")
                         }
                     }
+
+                    // Displays the company information when not in edit mode.
                 } else {
                     Text(
                         text = company.name,
@@ -671,6 +728,7 @@ fun CompanyCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
+                    // Displays a clickable website link when one is available.
                     company.websiteUrl?.let { url ->
                         Text(
                             text = url,
@@ -685,11 +743,14 @@ fun CompanyCard(
                 }
             }
 
+            // Contains the status menu and edit button. Positioned to the right.
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (!isEditing) {
+
+                    // Displays the current company status as a clickable label.
                     Surface(
                         modifier = Modifier.clickable {
                             expanded = true
@@ -709,6 +770,7 @@ fun CompanyCard(
                         )
                     }
 
+                    // Allows the user to change the company's status.
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = {
@@ -783,6 +845,8 @@ fun CompanyCard(
                     }
 
                 if (!isEditing) {
+
+                    // Starts editing this company if no other company is being edited.
                     OutlinedButton(
                         onClick = {
                             if (editingCompanyId != null) {
@@ -817,6 +881,7 @@ fun CompanyCard(
             }
         }
 
+        // Shows the delete button only when the company is not being edited.
         if (!isEditing) {
             Box(
                 modifier = Modifier
@@ -842,6 +907,7 @@ fun CompanyCard(
 
     }
 
+    // Asks the user to confirm before deleting the company.
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -853,6 +919,8 @@ fun CompanyCard(
             text = {
                 Text("Vill du ta bort ${company.name} från din företagslista? Åtgärden kan inte ångras.")
             },
+
+            // Deletes the company through the ViewModel and closes the dialog.
             confirmButton = {
                 Button(
                     onClick = {
@@ -867,6 +935,8 @@ fun CompanyCard(
                     Text("Ta bort")
                 }
             },
+
+            // Closes the dialog without deleting the company.
             dismissButton = {
                 TextButton(
                     onClick = {
@@ -881,11 +951,13 @@ fun CompanyCard(
     }
 }
 
+// Returns the background and status colors for a company based on its current status and theme.
 fun companyStatusColor(
     status: CompanyStatus,
     isDarkTheme: Boolean = false
 ): Pair<Color, Color>{
 
+    // Selects the color used to represent the company's status.
     val statusColor = when (status) {
         CompanyStatus.SAVED -> TurquoiseGreen
         CompanyStatus.CONTACT_ONGOING -> Lavender
@@ -893,6 +965,7 @@ fun companyStatusColor(
         CompanyStatus.LIA_CONFIRMED -> CelebrationRed
     }
 
+    // Selects the background color, with different colors for light and dark themes.
     val backgroundColor = if (isDarkTheme) {
         Color(0xFF465365)
     } else {
@@ -904,10 +977,12 @@ fun companyStatusColor(
         }
     }
 
+    // Returns both colors as a Pair.
     return backgroundColor to statusColor
 }
 
-            fun companyStatusText(status: CompanyStatus): String {
+// Converts a company status into a readable text label.
+fun companyStatusText(status: CompanyStatus): String {
                 return when (status) {
                     CompanyStatus.SAVED -> "Sparat företag"
                     CompanyStatus.APPLICATION_SENT -> "Ansökan skickad"
@@ -916,6 +991,7 @@ fun companyStatusColor(
                 }
             }
 
+            // Displays the collaboration screen.
             @Composable
             fun CollaborationScreen(modifier: Modifier = Modifier) {
                 Text(
@@ -924,6 +1000,7 @@ fun companyStatusColor(
                 )
             }
 
+            // Displays the user's profile screen.
             @Composable
             fun ProfileScreen(modifier: Modifier = Modifier) {
                 Text(
@@ -932,25 +1009,29 @@ fun companyStatusColor(
                 )
             }
 
+            // Reusable header component that displays a title at the top of a screen.
             @Composable
             fun ScreenHeader(
                 title: String,
                 modifier: Modifier = Modifier) {
+
+                // Arranges the header content horizontally.
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
+                    // Adds spacing before the title.
                     Spacer(modifier = Modifier.width(12.dp))
 
-
-
+                    // Displays the screen title using the app's theme.
                     Text(
                         text = title,
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
 
+                    // Adds spacing after the title.
                     Spacer(modifier = Modifier.height(20.dp))
 
                 }

@@ -42,25 +42,39 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 
-
+// Main entry point of the application.
+// Sets up the app theme, navigation and screen layout.
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Allows the app content to extend behind system bars.
         enableEdgeToEdge()
+        // Defines the user interface using Jetpack Compose.
         setContent {
+            // Creates or retrieves the ViewModel used to manage company data.
             val companyViewModel: CompanyViewModel = viewModel()
 
+            // Applies the app's custom colors, typography and theme.
             LIANavigatorTheme {
+
+                // Stores the currently selected bottom navigation item.
+                // The selection is preserved during configuration changes.
                 var selectedItem by rememberSaveable {
                     mutableIntStateOf(0)
                 }
+
+                // Stores the company status selected on the home screen.
+                // Null means that no specific status filter is selected.
                 var selectedStatus by rememberSaveable {
                     mutableStateOf<CompanyStatus?>(null)
                 }
 
+                // Provides the basic app layout with a top bar and bottom navigation.
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
+
+                    // Displays the app logo and profile button at the top.
                     topBar = {
                         TopAppBar(
                             title = {
@@ -86,11 +100,14 @@ class MainActivity : ComponentActivity() {
                             )
                         )
                     },
+
+                    // Provides navigation between the app's main screens.
                     bottomBar = {
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = MaterialTheme.colorScheme.primary,
                         ) {
+                            // Home screen
                             NavigationBarItem(
                                 selected = selectedItem == 0,
                                 onClick = { selectedItem = 0 },
@@ -107,6 +124,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
 
+                            //Company screen
                             NavigationBarItem(
                                 selected = selectedItem == 1,
                                 onClick = {
@@ -125,6 +143,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
 
+                            //Collaboration screen
                             NavigationBarItem(
                                 selected = selectedItem == 2,
                                 onClick = { selectedItem = 2 },
@@ -141,6 +160,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
 
+                            //Profile screen
                             NavigationBarItem(
                                 selected = selectedItem == 3,
                                 onClick = { selectedItem = 3 },
@@ -159,7 +179,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
+
+                    // Displays the screen corresponding to the selected navigation item.
+                    // Passes shared data and callbacks to the relevant screen.
                     when (selectedItem) {
+
+                        // Home screen: selecting a company status opens the company screen
+                        // with the selected status as a filter.
                         0 -> HomeScreen(
                             modifier = Modifier.padding(innerPadding),
                             viewModel = companyViewModel,
@@ -169,16 +195,19 @@ class MainActivity : ComponentActivity() {
                             }
                         )
 
+                        // Company screen: displays and manages the company list.
                         1 -> CompanyScreen(
                             modifier = Modifier.padding(innerPadding),
                             viewModel = companyViewModel,
                             selectedStatus = selectedStatus
                         )
 
+                        // Collaboration screen (currently a placeholder).
                         2 -> CollaborationScreen(
                             modifier = Modifier.padding(innerPadding)
                         )
 
+                        // Profile screen (currently a placeholder).
                         3 -> ProfileScreen(
                             modifier = Modifier.padding(innerPadding)
                         )
